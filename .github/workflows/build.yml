@@ -1,0 +1,40 @@
+# Reference on this file: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
+name: Lint and build
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+jobs:
+  build:
+    name: Lint and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: nodemodules-${{ hashFiles('yarn.lock') }}
+          restore-keys: nodemodules-
+      - name: Install Node packages
+        run: yarn install
+      - name: Lint
+        run: yarn lint
+      - name: Build
+        run: yarn build
+      - name: Leave only production Node packages
+        run: cp -a node_modules node_modules_backup && yarn install --production
+      - name: Make an archive for AWS Lambda and save it as an artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: lambda
+          path: |
+            dist/
+            node_modules/
+      - name: Restore Node packages for proper caching
+        run: rm -r node_modules && mv node_modules_backup node_modules
+      - name: How to deploy
+        run: echo 'In order to deploy the lambda, download the "lambda" artifact of this run and upload it into the function in the AWS Lambda UI (Upload from — .zip file)'

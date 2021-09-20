@@ -1,0 +1,9 @@
+# Project artifacts
+/dist/
+/node_modules/
+
+# Random excess stuff
+.DS_Store
+.idea/
+.vscode/
+yarn-error.log
