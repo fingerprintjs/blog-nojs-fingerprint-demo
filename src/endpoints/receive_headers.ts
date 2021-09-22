@@ -1,4 +1,4 @@
-import { Signal, Storage } from '../storage'
+import { SignalCollection, Storage } from '../storage'
 import signalSources from '../signal_sources'
 
 /**
@@ -10,21 +10,18 @@ export default async function receiveHeaders(
   resourceType: string,
   getHeader: (name: string) => string | undefined,
 ): Promise<void> {
-  const signals: Signal[] = []
+  const signals: SignalCollection = {}
 
   for (const signalSource of signalSources) {
     if (signalSource.type === 'httpHeader' && signalSource.resourceType === resourceType) {
       const headerValue = getHeader(signalSource.headerName)
       if (headerValue !== undefined) {
-        signals.push({
-          key: signalSource.key,
-          value: signalSource.getSignificantPart?.(headerValue) ?? headerValue,
-        })
+        signals[signalSource.key] = signalSource.getSignificantPart?.(headerValue) ?? headerValue
       }
     }
   }
 
-  if (signals.length) {
+  if (Object.keys(signals).length) {
     await storage.addSignals(visitId, signals)
   }
 }

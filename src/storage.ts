@@ -1,19 +1,16 @@
 import { makeVisitId } from './utils'
 
 /**
- * A piece of information associated with a visit. Used to identify the visit.
+ * A collection of signals.
+ * A signal is a piece of information associated with a visit. Signals are used to identify the visit.
+ *
+ * The keys are the signal keys.
+ * They are unique within a visit. If a new signal with the same key is given, the value will be overwritten.
+ * The key order is random and gives no information.
+ *
+ * The values are the signal values (plain strings).
  */
-export interface Signal {
-  /**
-   * The signal key.
-   * It's unique within a visit. If a new signal with the same key is given, the value will be overwritten.
-   */
-  key: string
-  /**
-   * The signal value
-   */
-  value: string
-}
+export type SignalCollection = Record<string, string>
 
 /**
  * Permanent storage for data like visits and signals
@@ -30,7 +27,7 @@ export interface Storage {
    * Adds signals to a visit.
    * If the visit is finilized or doesn't exist, nothing is added.
    */
-  addSignals(visitId: string, signals: readonly Readonly<Signal>[]): Promise<void>
+  addSignals(visitId: string, signals: Readonly<SignalCollection>): Promise<void>
 
   /**
    * Prohibits future changes of a visit including adding signals
@@ -38,9 +35,9 @@ export interface Storage {
   finalize(visitId: string): Promise<void>
 
   /**
-   * Gets the signals associated with a visit
+   * Gets the signals associated with a visit. Returns `undefined` if there is no visit with the given id.
    */
-  getSignals(visitId: string): Promise<readonly Readonly<Signal>[] | undefined>
+  getSignals(visitId: string): Promise<Readonly<SignalCollection> | undefined>
 }
 
 export class InMemoryStorage implements Storage {
@@ -49,7 +46,7 @@ export class InMemoryStorage implements Storage {
     {
       createdAt: Date
       isFinalized: boolean
-      signals: Map<string, string>
+      signals: SignalCollection
     }
   >()
 
@@ -61,7 +58,7 @@ export class InMemoryStorage implements Storage {
     this.visits.set(visitId, {
       createdAt: new Date(),
       isFinalized: false,
-      signals: new Map(),
+      signals: {},
     })
     if (isFinite(lifetimeMs)) {
       setTimeout(() => this.visits.delete(visitId), lifetimeMs)
@@ -69,12 +66,10 @@ export class InMemoryStorage implements Storage {
     return visitId
   }
 
-  public async addSignals(visitId: string, signals: readonly Readonly<Signal>[]): Promise<void> {
+  public async addSignals(visitId: string, signals: Readonly<SignalCollection>): Promise<void> {
     const visit = this.visits.get(visitId)
     if (visit && !visit.isFinalized) {
-      for (const { key, value } of signals) {
-        visit.signals.set(key, value)
-      }
+      Object.assign(visit.signals, signals)
     }
   }
 
@@ -85,17 +80,12 @@ export class InMemoryStorage implements Storage {
     }
   }
 
-  public async getSignals(visitId: string): Promise<Signal[] | undefined> {
+  public async getSignals(visitId: string): Promise<SignalCollection | undefined> {
     const visit = this.visits.get(visitId)
     if (!visit) {
       return undefined
     }
-    const signals = new Array<Signal>(visit.signals.size)
-    let index = 0
-    for (const [key, value] of visit.signals) {
-      signals[index++] = { key, value }
-    }
-    return signals
+    return { ...visit.signals }
   }
 }
 

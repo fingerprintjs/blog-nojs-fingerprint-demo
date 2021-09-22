@@ -72,7 +72,7 @@ function makeCodeForCssSignalSources(visitId: string, getSignalActivationUrl: Si
     switch (signalSource.type) {
       case 'css': {
         const className = `css_probe_${++probeCount}`
-        const style = `background: url('${getSignalActivationUrl(visitId, signalSource.key, '')}');`
+        const style = `background: url('${getSignalActivationUrl(visitId, signalSource.key, '')}')`
         html.push(`<div class="${escapeHtml(className)}"></div>`)
         css.push(signalSource.getCss(className, style))
         break
@@ -81,7 +81,7 @@ function makeCodeForCssSignalSources(visitId: string, getSignalActivationUrl: Si
         const className = `css_probe_${++probeCount}`
         html.push(`<div class="${escapeHtml(className)}"></div>`)
         for (const value of signalSource.mediaValues) {
-          const style = `background: url('${getSignalActivationUrl(visitId, signalSource.key, value)}');`
+          const style = `background: url('${getSignalActivationUrl(visitId, signalSource.key, value)}')`
           css.push(`@media (${signalSource.mediaName}: ${value}) { .${className} { ${style} } }`)
         }
         break
@@ -92,17 +92,18 @@ function makeCodeForCssSignalSources(visitId: string, getSignalActivationUrl: Si
 
         let previousBreakpoint: number | undefined
         const makeCssRule = (min: number | undefined, max: number | undefined) => {
+          const { key, mediaName, vendorPrefix = '', valueUnit = '' } = signalSource
           const activationUrl = getSignalActivationUrl(
             visitId,
-            signalSource.key,
+            key,
             [min, max].map((value) => (value === undefined ? '' : String(value))).join(','),
           )
           return (
             '@media ' +
-            (min === undefined ? '' : `(min-${signalSource.mediaName}: ${min}${signalSource.valueUnit})`) +
+            (min === undefined ? '' : `(${vendorPrefix}min-${mediaName}: ${min}${valueUnit})`) +
             (min === undefined || max === undefined ? '' : ' and ') +
-            (max === undefined ? '' : `(max-${signalSource.mediaName}: ${max - 0.00001}${signalSource.valueUnit})`) +
-            ` { .${className} { background: url('${activationUrl}'); } }`
+            (max === undefined ? '' : `(${vendorPrefix}max-${mediaName}: ${max - 0.00001}${valueUnit})`) +
+            ` { .${className} { background: url('${activationUrl}') } }`
           )
         }
 
@@ -113,6 +114,17 @@ function makeCodeForCssSignalSources(visitId: string, getSignalActivationUrl: Si
         if (previousBreakpoint !== undefined) {
           css.push(makeCssRule(previousBreakpoint, undefined))
         }
+        break
+      }
+      case 'fontAbsence': {
+        html.push(`<div style="font-family: '${signalSource.fontName}'">a</div>`)
+        css.push(
+          '@font-face { ' +
+            `font-family: '${signalSource.fontName}'; ` +
+            `src: local('${signalSource.fontName}'), ` +
+            `url('${getSignalActivationUrl(visitId, signalSource.key, '')}') format('truetype') }`,
+        )
+        break
       }
     }
   }

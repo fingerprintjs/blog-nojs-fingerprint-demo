@@ -1,5 +1,14 @@
 # No-JavaScript fingerprinting demo
 
+A fingerprint that works without JavaScript and cookies.
+
+The fingerprint stays unaltered in the following conditions:
+
+- Requesting desktop mode in mobile browsers
+- Spoofing the user agent
+- Going into incognito mode
+- Changing the IP
+
 ## Quick start
 
 You need to install [Node.js](https://nodejs.org) and [Yarn](https://yarnpkg.com) to run the application.

@@ -14,16 +14,17 @@ export default async function receiveSignal(
   const signalSource = signalSources.find((source) => source.key === signalKey)
   switch (signalSource?.type) {
     case 'css':
-      await storage.addSignals(visitId, [{ key: signalSource.key, value: '' }])
+    case 'fontAbsence':
+      await storage.addSignals(visitId, { [signalSource.key]: '' })
       return
     case 'cssMediaEnum':
       if (signalSource.mediaValues.includes(signalValue)) {
-        await storage.addSignals(visitId, [{ key: signalSource.key, value: signalValue }])
+        await storage.addSignals(visitId, { [signalSource.key]: signalValue })
       }
       return
     case 'cssMediaNumber':
       if (/^(\d+(\.\d+)?)?,(\d+(\.\d+)?)?$/.test(signalValue) && signalValue !== ',') {
-        await storage.addSignals(visitId, [{ key: signalSource.key, value: signalValue }])
+        await storage.addSignals(visitId, { [signalSource.key]: signalValue })
       }
       return
   }

@@ -26,6 +26,30 @@ yarn test
 yarn start
 ```
 
+## A script to see all supported CSS properties
+
+```js
+var props = new Set()
+for (const prop of Object.getOwnPropertyNames(getComputedStyle(document.body))) {
+  if (!/^\d+$/.test(prop)) {
+    props.add(prop)
+  }
+}
+if (typeof CSSStyleDeclaration !== 'undefined') {
+  for (const prop of Object.getOwnPropertyNames(CSSStyleDeclaration.prototype)) {
+    props.add(prop)
+  }
+}
+if (typeof CSS2Properties !== 'undefined') {
+  for (const prop of Object.getOwnPropertyNames(CSS2Properties.prototype)) {
+    props.add(prop)
+  }
+}
+var output = document.createElement('textarea')
+output.value = [...props].sort().join('\n')
+document.body.appendChild(output)
+```
+
 ## Building and deploying
 
 The application is supposed to be deployed to AWS Lambda.

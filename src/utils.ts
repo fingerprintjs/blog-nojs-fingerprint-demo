@@ -67,3 +67,10 @@ export function* getExponentialSequence(
     }
   }
 }
+
+export function toCamelCase(text: string): string {
+  return text
+    .split(/\s+/)
+    .map((word, index) => word.slice(0, 1)[index === 0 ? 'toLowerCase' : 'toUpperCase']() + word.slice(1).toLowerCase())
+    .join('')
+}
