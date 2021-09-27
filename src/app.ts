@@ -3,10 +3,10 @@ import { InMemoryStorage } from './storage'
 import renderMainPage from './endpoints/main_page'
 import receiveSignal from './endpoints/receive_signal'
 import receiveHeaders from './endpoints/receive_headers'
+import renderWaitResultFrame from './endpoints/wait_result_frame'
+import renderResultFrame from './endpoints/result_frame'
 import renderResultPage from './endpoints/result_page'
-import { responseToExpress } from './utils'
-
-const visitLifetimeMs = 24 * 60 * 60 * 1000
+import { makeExpressHeaderGetter, responseToExpress } from './utils'
 
 export default async function initApp(): Promise<express.Express> {
   const storage = new InMemoryStorage()
@@ -17,11 +17,10 @@ export default async function initApp(): Promise<express.Express> {
       res,
       await renderMainPage(
         storage,
-        visitLifetimeMs,
         (visitId, signalKey, signalValue) =>
           `/signal/${encodeURIComponent(visitId)}/${encodeURIComponent(signalKey)}/${encodeURIComponent(signalValue)}`,
         (visitId, resourceType) => `/headers/${encodeURIComponent(visitId)}/${encodeURIComponent(resourceType)}`,
-        (visitId) => `/result/${encodeURIComponent(visitId)}`,
+        (visitId) => `/waitResult/${encodeURIComponent(visitId)}`,
       ),
     )
   })
@@ -34,13 +33,29 @@ export default async function initApp(): Promise<express.Express> {
 
   app.get('/headers/:visitId/:resourceType', async (req, res) => {
     const { visitId, resourceType } = req.params
-    const getHeader = (headerName: string) => req.header(headerName)
-    await receiveHeaders(storage, visitId, resourceType, getHeader)
+    await receiveHeaders(storage, visitId, resourceType, makeExpressHeaderGetter(req))
     res.send()
   })
 
+  // Combines 2 actions: collects HTTP headers that the browser sends to page resources,
+  // and shows an iframe page for waiting for the result
+  app.get('/waitResult/:visitId', async (req, res) => {
+    const { visitId } = req.params
+    const getHeader = makeExpressHeaderGetter(req)
+    await receiveHeaders(storage, visitId, 'page', getHeader)
+    const response = renderWaitResultFrame(getHeader, `/compactResult/${encodeURIComponent(visitId)}`)
+    responseToExpress(res, response)
+  })
+
+  app.get('/compactResult/:visitId', async (req, res) => {
+    const { visitId } = req.params
+    const response = await renderResultFrame(storage, visitId, `/result/${encodeURIComponent(visitId)}`)
+    responseToExpress(res, response)
+  })
+
   app.get('/result/:visitId', async (req, res) => {
-    responseToExpress(res, await renderResultPage(storage, req.params.visitId))
+    const response = await renderResultPage(storage, req.params.visitId)
+    responseToExpress(res, response)
   })
 
   return app

@@ -1,6 +1,8 @@
 import { Storage } from '../storage'
-import signalSources, { HttpHeaderSignalSource } from '../signal_sources'
+import signalSources from '../signal_sources'
+import { HttpHeaderSignalSource } from '../common_types'
 import { escapeHtml, HttpResponse } from '../utils'
+import { clientHintHeaders as resultDelayChHeaders } from './wait_result_frame'
 
 /**
  * Makes a URL that the browser will request if the signal activates
@@ -13,21 +15,22 @@ type SignalActivationUrlFactory = (visitId: string, signalKey: string, signalVal
 type HeaderProbeUrlFactory = (visitId: string, resourceType: HttpHeaderSignalSource['resourceType']) => string
 
 /**
- * Makes a URL where the visitor should navigate to see the result
+ * Makes a URL of the iframe to show the result
  */
 type ResultUrlFactory = (visitId: string) => string
 
+export const resultDelayClassName = 'resultDelay'
+
 /**
- * The main page that makes browser send HTTP requests that reviel information about the browser
+ * The main page that makes browser send HTTP requests that reveal information about the browser
  */
 export default async function renderMainPage(
   storage: Storage,
-  visitLifetimeMs: number,
   getSignalActivationUrl: SignalActivationUrlFactory,
   getHeaderProbeUrl: HeaderProbeUrlFactory,
-  getResultUrl: ResultUrlFactory,
+  getResultFrameUrl: ResultUrlFactory,
 ): Promise<HttpResponse> {
-  const visitId = await storage.createVisit(visitLifetimeMs)
+  const visitId = await storage.createVisit()
   const codeForCssSignalSources = makeCodeForCssSignalSources(visitId, getSignalActivationUrl)
 
   const body = `<!DOCTYPE html>
@@ -36,17 +39,23 @@ export default async function renderMainPage(
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>No-JavaScript fingerprinting</title>
-    <link rel="stylesheet" href="${escapeHtml(getHeaderProbeUrl(visitId, 'style'))}" />
     <style>
 ${codeForCssSignalSources.css.join('\n')}
     </style>
+    <link rel="stylesheet" href="${escapeHtml(getHeaderProbeUrl(visitId, 'style'))}" />
   </head>
   <body>
-    <div>Hello, world</div>
-    <a href="${escapeHtml(getResultUrl(visitId))}">See my id</a>
+    <h1>No-JS fingerprinting</h1>
+    <div>
+      <iframe src="${escapeHtml(getResultFrameUrl(visitId))}"></iframe>
+    </div>
+    <noscript>
+      <div>
+        <img src="https://media.makeameme.org/created/it-is-magic-5b4cb3.jpg" alt="It's magic" style="max-width: 100%;" />
+      </div>
+    </noscript>
     <div style="position: absolute; top: 0; left: -9999px;">
-      <iframe src="${escapeHtml(getHeaderProbeUrl(visitId, 'page'))}"></iframe>
-      <img src="${escapeHtml(getHeaderProbeUrl(visitId, 'image'))}" />
+      <img src="${escapeHtml(getHeaderProbeUrl(visitId, 'image'))}" alt="" />
       <video src="${escapeHtml(getHeaderProbeUrl(visitId, 'video'))}"></video>
       <audio src="${escapeHtml(getHeaderProbeUrl(visitId, 'audio'))}"></audio>
 ${codeForCssSignalSources.html.join('\n')}
@@ -57,7 +66,7 @@ ${codeForCssSignalSources.html.join('\n')}
   return {
     body,
     headers: {
-      'Accept-CH': getClientHintHeader().join(', '),
+      'Accept-CH': [...resultDelayChHeaders, ...getClientHintHeaders()].join(', '),
       'Content-Type': 'text/html; charset=utf-8',
     },
   }
@@ -132,7 +141,7 @@ function makeCodeForCssSignalSources(visitId: string, getSignalActivationUrl: Si
   return { css, html }
 }
 
-function getClientHintHeader() {
+function getClientHintHeaders() {
   const names: string[] = []
   for (const signalSource of signalSources) {
     if (signalSource.type === 'httpHeader' && signalSource.isClientHint) {

@@ -1,5 +1,6 @@
-import { SignalCollection, Storage } from '../storage'
+import { Storage } from '../storage'
 import signalSources from '../signal_sources'
+import { SignalCollection } from '../common_types'
 
 /**
  * Saves HTTP request headers as the visit signals

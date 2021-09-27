@@ -20,9 +20,13 @@ export function escapeHtml(input: string): string {
 }
 
 export interface HttpResponse {
-  body: string
   status?: number
   headers?: Record<string, string>
+  body?: string
+}
+
+export function makeExpressHeaderGetter(expressRequest: express.Request): (headerName: string) => string | undefined {
+  return (headerName: string) => expressRequest.header(headerName)
 }
 
 export function responseToExpress(expressResponse: express.Response, responseData: HttpResponse): void {

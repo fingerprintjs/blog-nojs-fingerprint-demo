@@ -1,21 +1,18 @@
-import * as murmurHash3 from 'murmurhash3js'
-import { SignalCollection, Storage } from '../storage'
-import signalSources, { SignalSource } from '../signal_sources'
+import { Storage } from '../storage'
+import signalSources from '../signal_sources'
 import { escapeHtml, HttpResponse } from '../utils'
+import { SignalCollection, SignalSource } from '../common_types'
 
 /**
- * Shows the collected signals and the visitor id of the given visit
+ * Shows the collected signals and the fingerprint of the given visit
  */
 export default async function resultPage(storage: Storage, visitId: string): Promise<HttpResponse> {
-  await storage.finalize(visitId)
-  const signals = await storage.getSignals(visitId)
-
-  if (!signals) {
-    return {
-      status: 404,
-      body: 'Not found',
-    }
+  const visit = await storage.finalizeAndGetVisit(visitId, true)
+  if (!visit) {
+    return notFoundPage()
   }
+
+  const fingerprintAge = Date.now() - visit.finalizedAt.getTime()
 
   const body = `<!DOCTYPE html>
 <html lang="en">
@@ -26,9 +23,18 @@ export default async function resultPage(storage: Storage, visitId: string): Pro
   </head>
   <body>
     <div><a href="/">Go to the start</a></div>
-    <div>Fingerprint: ${escapeHtml(getFingerprint(signals))}</div>
+    <div>Fingerprint: ${escapeHtml(visit.fingerprint)}</div>
+    ${
+      fingerprintAge > 2 * 60 * 1000
+        ? '<div>' +
+          `The fingerprint was obtained more than ${Math.floor(fingerprintAge / 60 / 1000)} minutes ago. ` +
+          "Probably, it doesn't belong to your browser. " +
+          'Get your fingerprint <a href="/">here</a>. ' +
+          '</div>'
+        : ''
+    }
     <ul>
-      ${signalSources.map((signalSource) => renderSignal(signalSource, signals)).join('\n')}
+      ${signalSources.map((signalSource) => renderSignal(signalSource, visit.signals)).join('\n')}
     </ul>
   </body>
 </html>`
@@ -37,25 +43,6 @@ export default async function resultPage(storage: Storage, visitId: string): Pro
     body,
     headers: { 'Content-Type': 'text/html; charset=utf-8' },
   }
-}
-
-function getFingerprint(signals: Readonly<SignalCollection>): string {
-  const canonicalSignals: Record<string, string> = {}
-
-  for (const source of signalSources) {
-    if (!source.shouldDiscard?.(signals)) {
-      canonicalSignals[source.key] = signals[source.key]
-    }
-  }
-
-  // When the device orientation changes on Android, the screen width and height swap.
-  // This is a hack to prevent changing the id in this case.
-  ;[canonicalSignals.cssScreenWidth, canonicalSignals.cssScreenHeight] = [
-    canonicalSignals.cssScreenWidth,
-    canonicalSignals.cssScreenHeight,
-  ].sort()
-
-  return murmurHash3.x64.hash128(JSON.stringify(canonicalSignals))
 }
 
 function renderSignal(source: Readonly<SignalSource>, signals: Readonly<SignalCollection>): string {
@@ -89,7 +76,7 @@ function renderSignal(source: Readonly<SignalSource>, signals: Readonly<SignalCo
       break
   }
 
-  html += `<div>Value: `
+  html += `<div>Value: <strong>`
   switch (source.type) {
     case 'css':
       html += signalValue === undefined ? 'No' : 'Yes'
@@ -101,16 +88,28 @@ function renderSignal(source: Readonly<SignalSource>, signals: Readonly<SignalCo
       html +=
         signalValue === undefined
           ? '(undefined)'
-          : signalValue
-              .split(',', 2)
-              .map((part, index) => `${index === 0 ? '≥' : '<'}${part}${source.valueUnit ?? ''}`)
-              .join(', ')
+          : escapeHtml(
+              signalValue
+                .split(',', 2)
+                .map((part, index) => `${index === 0 ? '≥' : '<'}${part}${source.valueUnit ?? ''}`)
+                .join(', '),
+            )
       break
     default:
       html += signalValue === undefined ? '(undefined)' : escapeHtml(signalValue || '(empty)')
   }
-  html += '</div>'
+  html += '</strong></div>'
 
   html += '</li>'
   return html
+}
+
+function notFoundPage(): HttpResponse {
+  return {
+    status: 404,
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+    },
+    body: 'The visit is not found. <a href="/">Back to the start</a>.',
+  }
 }
