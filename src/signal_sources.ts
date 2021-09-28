@@ -167,12 +167,13 @@ const signalSources: readonly Readonly<SignalSource>[] = [
   },
 
   ...[
-    'Roboto', // Most likely available only on Android
+    'Roboto', // Most likely available only on Android and ChromeOS
     'Ubuntu', // Most likely available only on Ubuntu
     'Calibri', // Most likely available only on Windows
     'MS UI Gothic', // Most likely available only on Windows
     'Gill Sans', // Most likely available only on macOS
     'Helvetica Neue', // Most likely available only on macOS and iOS
+    'Arimo', // Most likely available only on ChromeOS. Other exclusive fonts: Tinos, Cousine, Caladea, Carlito
   ].map((fontName) => ({
     type: 'fontAbsence' as const,
     key: `${toCamelCase(fontName)}FontAbsence`,
