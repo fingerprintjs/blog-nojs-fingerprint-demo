@@ -78,3 +78,20 @@ export function toCamelCase(text: string): string {
     .map((word, index) => word.slice(0, 1)[index === 0 ? 'toLowerCase' : 'toUpperCase']() + word.slice(1).toLowerCase())
     .join('')
 }
+
+export async function catchErrorForExpress(
+  req: express.Request,
+  res: express.Response,
+  action: () => unknown,
+): Promise<void> {
+  try {
+    await action()
+  } catch (error) {
+    if (!res.headersSent) {
+      console.error(`Error during handling ${req.method} ${req.path} :`, error)
+      res.status(500)
+      res.header('Content-Type', 'text/html; charset=utf-8')
+      res.send('<h1>Unexpected error</h1><p>Something went wrong</p>')
+    }
+  }
+}

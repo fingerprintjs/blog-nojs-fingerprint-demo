@@ -1,4 +1,4 @@
-import { Storage } from '../storage'
+import { Storage } from '../common_types'
 import signalSources from '../signal_sources'
 
 /**

@@ -1,7 +1,6 @@
-import { Storage } from '../storage'
 import signalSources from '../signal_sources'
 import { escapeHtml, HttpResponse } from '../utils'
-import { SignalCollection, SignalSource } from '../common_types'
+import { SignalCollection, SignalSource, Storage } from '../common_types'
 
 /**
  * Shows the collected signals and the fingerprint of the given visit

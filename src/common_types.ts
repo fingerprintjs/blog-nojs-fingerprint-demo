@@ -2,9 +2,7 @@
  * A collection of signals.
  * A signal is a piece of information associated with a visit. Signals are used to identify the visit.
  *
- * The keys are the signal keys.
- * They are unique within a visit. If a new signal with the same key is given, the value will be overwritten.
- * The key order is random and gives no information.
+ * The keys are the signal keys. They are unique within a visit. The key order is random and gives no information.
  *
  * The values are the signal values (plain strings).
  */
@@ -76,4 +74,39 @@ export type SignalSource = (
    * Implement this method to remove this signal from the fingerprint calculation if some conditions are met.
    */
   shouldDiscard?(allSignals: Readonly<SignalCollection>): boolean
+}
+
+export interface VisitInfo {
+  /** When the fingerprint was calculated */
+  finalizedAt: Date
+  /** The fingerprint derived from the signals */
+  fingerprint: string
+  /** The list of signals associated with the visit */
+  signals: Readonly<SignalCollection>
+}
+
+/**
+ * Permanent storage for data like visits and signals
+ */
+export interface Storage {
+  /**
+   * Stores a new visit and returns its public identifier.
+   * A visit is a single view of the page that collects the signals.
+   * The visit will receive signals to make the visitor identifier.
+   */
+  createVisit(visitorIp: string, visitorUserAgent: string): Promise<string>
+
+  /**
+   * Adds signals to a visit.
+   * If a signal with an existing key is given, the value will be overwritten.
+   * If the visit is finalized or doesn't exist, nothing is added.
+   */
+  addSignals(visitId: string, signals: Readonly<SignalCollection>): Promise<void>
+
+  /**
+   * Prohibits future changes of a visit, including adding signals, if not prohibited already.
+   * Returns the visit data to show to the visitor.
+   * Returns `undefined` if there is no visit with the given id.
+   */
+  finalizeAndGetVisit(visitId: string, includeSignals?: boolean): Promise<Readonly<VisitInfo> | undefined>
 }

@@ -1,6 +1,5 @@
-import { Storage } from '../storage'
 import signalSources from '../signal_sources'
-import { HttpHeaderSignalSource } from '../common_types'
+import { HttpHeaderSignalSource, Storage } from '../common_types'
 import { escapeHtml, HttpResponse } from '../utils'
 import { clientHintHeaders as resultDelayChHeaders } from './wait_result_frame'
 
@@ -19,18 +18,18 @@ type HeaderProbeUrlFactory = (visitId: string, resourceType: HttpHeaderSignalSou
  */
 type ResultUrlFactory = (visitId: string) => string
 
-export const resultDelayClassName = 'resultDelay'
-
 /**
  * The main page that makes browser send HTTP requests that reveal information about the browser
  */
 export default async function renderMainPage(
   storage: Storage,
+  ip: string,
+  userAgent: string,
   getSignalActivationUrl: SignalActivationUrlFactory,
   getHeaderProbeUrl: HeaderProbeUrlFactory,
   getResultFrameUrl: ResultUrlFactory,
 ): Promise<HttpResponse> {
-  const visitId = await storage.createVisit()
+  const visitId = await storage.createVisit(ip, userAgent)
   const codeForCssSignalSources = makeCodeForCssSignalSources(visitId, getSignalActivationUrl)
 
   const body = `<!DOCTYPE html>

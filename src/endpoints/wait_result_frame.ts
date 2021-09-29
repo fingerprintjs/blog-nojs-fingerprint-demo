@@ -15,7 +15,8 @@ export default function waitResultFrame(
   getHeader: (name: string) => string | undefined,
   resultFrameUrl: string,
 ): HttpResponse {
-  const resultDelay = getResultDelay(getHeader('Downlink'))
+  const resultPromptDelay = getResultDelay(getHeader('Downlink'))
+  const resultRedirectDelay = resultPromptDelay * 3
 
   const body = `<!DOCTYPE html>
 <html lang="en">
@@ -42,7 +43,7 @@ export default function waitResultFrame(
         }
       }
       .resultDelay {
-        animation-duration: ${resultDelay.toFixed(2)}s;
+        animation-duration: ${resultPromptDelay.toFixed(2)}s;
         animation-timing-function: step-end;
       }
       .resultPlaceholder {
@@ -71,6 +72,7 @@ export default function waitResultFrame(
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
       'Cache-Control': 'no-cache, must-revalidate',
+      Refresh: `${Math.ceil(resultRedirectDelay)};url=${resultFrameUrl}`,
     },
     body,
   }

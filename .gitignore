@@ -1,3 +1,6 @@
+# Configuration
+/.env
+
 # Project artifacts
 /dist/
 /node_modules/

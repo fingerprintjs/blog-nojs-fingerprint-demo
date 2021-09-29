@@ -1,6 +1,9 @@
+import dotenv from 'dotenv'
 import initApp from './app'
 
-const port = Number(process.env.PORT || 8080)
+dotenv.config()
+
+const port = Number(process.env.SERVER_PORT || 8080)
 
 initApp().then((app) => {
   app.listen(port, () => {

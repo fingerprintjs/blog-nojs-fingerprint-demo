@@ -11,13 +11,18 @@ The fingerprint stays unaltered in the following conditions:
 
 ## Quick start
 
-You need to install [Node.js](https://nodejs.org) and [Yarn](https://yarnpkg.com) to run the application.
+You need to install [Node.js](https://nodejs.org), [Yarn](https://yarnpkg.com)
+and a PostgreSQL server (e.g. [Postgress.app](https://postgresapp.com)) to run the application.
+
+Connect to the PostgreSQL server, create and empty database and run all the files from the `migrations` directory in the database.
+
+Copy the `.env.example` file to `.env`, open `.env` and change it to match the database.
 
 Open this directory in a terminal and run:
 
 ```bash
 yarn install
-yarn start # Run `PORT=3000 yarn start` to start the app on another port
+yarn start
 ```
 
 Then open the application in a browser: http://localhost:8080
