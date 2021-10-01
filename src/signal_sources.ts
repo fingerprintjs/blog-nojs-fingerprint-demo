@@ -142,7 +142,7 @@ const signalSources: readonly Readonly<SignalSource>[] = [
   {
     type: 'cssMediaNumber',
     key: 'cssResolution',
-    title: 'Dixel density',
+    title: 'Pixel density',
     mediaName: 'device-pixel-ratio',
     getRangeBreakpoints: () => getExponentialSequence(0.5, 5, 1.15, 0.1),
     vendorPrefix: '-webkit-',

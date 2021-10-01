@@ -21,7 +21,7 @@ export default async function resultFrame(
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   </head>
   <body>
-    <div>Fingerprint: ${escapeHtml(visit.fingerprint)}</div>
+    <div>Your fingerprint: <strong>${escapeHtml(visit.fingerprint)}</strong></div>
     <div><a href="${escapeHtml(fullResultUrl)}" target="_top">See more details</a></div>
   </body>
 </html>`

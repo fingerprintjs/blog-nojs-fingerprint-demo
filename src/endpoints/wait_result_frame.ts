@@ -63,7 +63,7 @@ export default function waitResultFrame(
       Collecting data, please wait...
     </div>
     <div class="resultBlock resultDelay">
-      <a href="${escapeHtml(resultFrameUrl)}">See my fingerprint</a>
+      <a href="${escapeHtml(resultFrameUrl)}">See your fingerprint</a>
     </div>
   </body>
 </html>`
