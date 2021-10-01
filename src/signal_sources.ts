@@ -142,7 +142,7 @@ const signalSources: readonly Readonly<SignalSource>[] = [
   {
     type: 'cssMediaNumber',
     key: 'cssResolution',
-    title: 'Pixel density',
+    title: 'Pixel density (from CSS)',
     mediaName: 'device-pixel-ratio',
     getRangeBreakpoints: () => getExponentialSequence(0.5, 5, 1.15, 0.1),
     vendorPrefix: '-webkit-',
@@ -203,6 +203,14 @@ const signalSources: readonly Readonly<SignalSource>[] = [
     title: 'Device memory',
     resourceType: 'page',
     headerName: 'Device-Memory',
+    isClientHint: true,
+  },
+  {
+    type: 'httpHeader',
+    key: 'dprHeader',
+    title: 'Pixel density (from HTTP headers)',
+    resourceType: 'image',
+    headerName: 'DPR',
     isClientHint: true,
   },
   {
