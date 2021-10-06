@@ -1,0 +1,175 @@
+/* The class names follow BEM: https://en.bem.info/methodology/quick-start */
+
+body {
+  min-width: 360px;
+  background: #242424;
+  color: #D3D3D3;
+  font-family: 'Space Grotesk', sans-serif, -apple-system;
+  font-size: 14px;
+  line-height: 1.429;
+  padding: 0;
+  margin: 0;
+}
+body._no-min-width {
+  min-width: 0;
+}
+a {
+  color: #FF9040;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+h1, h2, h3 {
+  line-height: 0.914;
+  font-weight: 600;
+  color: #fff;
+}
+h1 {
+  font-size: 48px;
+  margin: 32px 0 16px;
+}
+h2 {
+  font-size: 32px;
+}
+h3 {
+  font-size: 24px;
+}
+@media (max-width: 540px) {
+  h1 {
+    font-size: 8.8888vw;
+  }
+}
+
+.main-layout {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-height: 100vh;
+  padding: 40px 20px;
+  text-align: center;
+}
+.main-layout__body,
+.main-layout__footer,
+.js-disable__steps {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+.main-layout__body > :first-child {
+  margin-top: 0;
+}
+.main-layout__body > :last-child {
+  margin-bottom: 0;
+}
+.main-layout__wide-sub-body {
+  margin-top: 40px;
+}
+.main-layout__footer,
+.js-disable__steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(140px, 100%), 1fr)); /* See https://codepen.io/TheFinesse/pen/Ozyaze?editors=1100 */
+}
+.main-layout__footer {
+  padding-top: 120px;
+  margin-top: auto;
+  grid-gap: 16px 24px;
+  text-align: left;
+}
+.main-layout__footer a,
+.main-layout__footer a:hover {
+  color: #fff;
+}
+
+.hero-title__logo {
+  height: 42px;
+}
+
+.fp-frame {
+  border: none;
+  width: 100%;
+  height: 154px;
+  margin: 64px 0;
+}
+
+.js-disable__steps {
+  padding: 0;
+  grid-gap: 24px;
+  text-align: left;
+  list-style: none;
+  counter-reset: js-disable-steps;
+}
+.js-disable__steps.js-disable__steps_count-4 {
+  max-width: 672px;
+}
+.js-disable__steps.js-disable__steps_count-5 {
+  max-width: 846px;
+}
+.js-disable__steps.js-disable__steps_count-6 {
+  max-width: 1020px;
+}
+.js-disable__steps > li {
+  counter-increment: js-disable-steps;
+}
+.js-disable__steps > li::before {
+  content: counter(js-disable-steps);
+  display: block;
+  margin: 0 0 8px;
+  line-height: 0.914;
+  font-size: 24px;
+  font-weight: 600;
+  color: #fff;
+}
+.js-disable__header {
+  margin-top: 24px;
+}
+
+.fp-block {
+  box-sizing: border-box;
+  min-height: 154px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 32px;
+}
+.fp-block__loading {
+  margin: 16px 0 0;
+}
+.fp-block__button {
+  display: block;
+  margin: 24px 0 0;
+  padding: 10px 16px;
+  font-size: 18px;
+  line-height: 1.167;
+  color: #fff;
+  text-decoration: none;
+  border: 1px solid #FF9040;
+  border-radius: 12px;
+}
+.fp-block__button:hover {
+  background: #FF9040;
+  text-decoration: none;
+}
+.fp-block__fingerprint {
+  margin: 16px 0 24px;
+  font-size: 23px;
+  line-height: 1.193;
+  font-weight: 600;
+  color: #fff;
+}
+@media (max-width: 500px) {
+  .fp-block__fingerprint {
+    font-size: 4.6vw;
+  }
+}
+
+.frame-layout {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100vh;
+}

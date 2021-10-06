@@ -1,3 +1,4 @@
+import path from 'path'
 import express from 'express'
 import * as pg from 'pg'
 import { Storage } from './common_types'
@@ -73,6 +74,14 @@ export default async function initApp(): Promise<express.Express> {
       responseToExpress(res, response)
     })
   })
+
+  // This middleware is the last to make express scan the directory only if none of the app routes match
+  app.use(
+    express.static(path.join(__dirname, '..', 'public'), {
+      index: false,
+      redirect: false,
+    }),
+  )
 
   return app
 }
