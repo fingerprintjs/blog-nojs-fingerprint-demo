@@ -34,6 +34,7 @@ jobs:
           path: |
             dist/
             node_modules/
+            public/
       - name: Restore Node packages for proper caching
         run: rm -r node_modules && mv node_modules_backup node_modules
       - name: How to deploy

@@ -10,7 +10,7 @@ import renderWaitResultFrame from './endpoints/wait_result_frame'
 import renderResultFrame from './endpoints/result_frame'
 import renderResultPage from './endpoints/result_page'
 import renderNotFoundPage from './view/not_found_page'
-import { catchErrorForExpress, makeExpressHeaderGetter, responseToExpress } from './utils'
+import { catchErrorForExpress, getUrlFromExpressRequest, makeExpressHeaderGetter, responseToExpress } from './utils'
 
 export default async function initApp(): Promise<express.Express> {
   const storage = createStorage()
@@ -20,15 +20,17 @@ export default async function initApp(): Promise<express.Express> {
     catchErrorForExpress(req, res, async () => {
       responseToExpress(
         res,
-        await renderMainPage(
+        await renderMainPage({
           storage,
-          req.ip,
-          req.header('User-Agent') || '',
-          (visitId, signalKey, value) =>
+          requestUrl: getUrlFromExpressRequest(req),
+          ip: req.ip,
+          userAgent: req.header('User-Agent') || '',
+          getSignalActivationUrl: (visitId, signalKey, value) =>
             `/signal/${encodeURIComponent(visitId)}/${encodeURIComponent(signalKey)}/${encodeURIComponent(value)}`,
-          (visitId, resourceType) => `/headers/${encodeURIComponent(visitId)}/${encodeURIComponent(resourceType)}`,
-          (visitId) => `/waitResult/${encodeURIComponent(visitId)}`,
-        ),
+          getHeaderProbeUrl: (visitId, resourceType) =>
+            `/headers/${encodeURIComponent(visitId)}/${encodeURIComponent(resourceType)}`,
+          getResultFrameUrl: (visitId) => `/waitResult/${encodeURIComponent(visitId)}`,
+        }),
       )
     })
   })
@@ -71,7 +73,7 @@ export default async function initApp(): Promise<express.Express> {
 
   app.get('/result/:visitId', (req, res) => {
     catchErrorForExpress(req, res, async () => {
-      const response = await renderResultPage(storage, req.params.visitId)
+      const response = await renderResultPage(storage, req.params.visitId, getUrlFromExpressRequest(req))
       responseToExpress(res, response)
     })
   })

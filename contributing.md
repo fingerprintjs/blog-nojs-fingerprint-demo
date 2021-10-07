@@ -113,6 +113,7 @@ Create a lambda function:
     - Timeout: `10` seconds
 - On the function page click "Configuration", "Environment variables" and add variables:
     - `NODE_OPTIONS` `--enable-source-maps`
+    - `NODE_ENV` `production`
     - `DB_HOST` the endpoint of the database server that you've created earlier
     - `DB_PORT` the port of the database server
     - `DB_USERNAME` the username that you've created during the database creation

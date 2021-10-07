@@ -25,7 +25,7 @@ export default function renderPage({
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>${htmlTitle && `${escapeHtml(htmlTitle)} | `}No-JavaScript fingerprinting</title>
-    <link rel="icon" href="/images/favicon.ico" />
+    <link rel="icon" href="/favicon.ico" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap" />
     <link rel="stylesheet" href="/style.css" />
     ${lowerHeadHtml}

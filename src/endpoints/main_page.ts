@@ -4,6 +4,7 @@ import { escapeHtml, HttpResponse } from '../utils'
 import renderLayout from '../view/layout'
 import renderHeroTitle from '../view/hero_title'
 import renderJsDisableGuide from '../view/js_disable_guide'
+import renderSocialHeaders from '../view/social_headers'
 import { clientHintHeaders as resultDelayChHeaders } from './wait_result_frame'
 
 /**
@@ -21,17 +22,28 @@ type HeaderProbeUrlFactory = (visitId: string, resourceType: HttpHeaderSignalSou
  */
 type ResultUrlFactory = (visitId: string) => string
 
+interface Options {
+  storage: Storage
+  requestUrl: string
+  ip: string
+  userAgent: string
+  getSignalActivationUrl: SignalActivationUrlFactory
+  getHeaderProbeUrl: HeaderProbeUrlFactory
+  getResultFrameUrl: ResultUrlFactory
+}
+
 /**
  * The main page that makes browser send HTTP requests that reveal information about the browser
  */
-export default async function renderMainPage(
-  storage: Storage,
-  ip: string,
-  userAgent: string,
-  getSignalActivationUrl: SignalActivationUrlFactory,
-  getHeaderProbeUrl: HeaderProbeUrlFactory,
-  getResultFrameUrl: ResultUrlFactory,
-): Promise<HttpResponse> {
+export default async function renderMainPage({
+  storage,
+  requestUrl,
+  ip,
+  userAgent,
+  getSignalActivationUrl,
+  getHeaderProbeUrl,
+  getResultFrameUrl,
+}: Options): Promise<HttpResponse> {
   const visitId = await storage.createVisit(ip, userAgent)
   const codeForCssSignalSources = makeCodeForCssSignalSources(visitId, getSignalActivationUrl)
   const jsDisableGuide = renderJsDisableGuide(userAgent)
@@ -68,6 +80,11 @@ ${jsDisableGuide ? `<p class="js-disable__header">${escapeHtml(jsDisableGuide[0]
   const response = renderLayout({
     // The probe HTML should go before the main HTML to send the probe requests ASAP
     upperHeadHtml,
+    lowerHeadHtml: renderSocialHeaders(
+      requestUrl,
+      'No-JS fingerprinting',
+      'This demo illustrates that fingerprinting is possible even without JavaScript and cookies',
+    ),
     bodyHtml,
     wideSubBodyHtml,
   })

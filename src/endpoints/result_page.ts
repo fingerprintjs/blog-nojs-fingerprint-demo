@@ -3,11 +3,12 @@ import { escapeHtml, HttpResponse } from '../utils'
 import { SignalCollection, SignalSource, Storage } from '../common_types'
 import renderLayout from '../view/layout'
 import renderNotFoundPage from '../view/not_found_page'
+import renderSocialHeaders from '../view/social_headers'
 
 /**
  * Shows the collected signals and the fingerprint of the given visit
  */
-export default async function resultPage(storage: Storage, visitId: string): Promise<HttpResponse> {
+export default async function resultPage(storage: Storage, visitId: string, requestUrl: string): Promise<HttpResponse> {
   const visit = await storage.finalizeAndGetVisit(visitId, true)
   if (!visit) {
     return renderNotFoundPage()
@@ -40,7 +41,12 @@ ${
 </ul>`
 
   return renderLayout({
-    htmlTitle: 'My fingerprint',
+    lowerHeadHtml: renderSocialHeaders(
+      requestUrl,
+      `My fingerprint is ${visit.fingerprint}`,
+      'This fingerprint was obtained without JavaScript and cookies',
+    ),
+    htmlTitle: 'Your fingerprint',
     bodyHtml,
   })
 }
