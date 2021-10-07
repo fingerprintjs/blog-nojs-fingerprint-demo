@@ -2,6 +2,7 @@ import signalSources from '../signal_sources'
 import { escapeHtml, HttpResponse } from '../utils'
 import { SignalCollection, SignalSource, Storage } from '../common_types'
 import renderLayout from '../view/layout'
+import renderNotFoundPage from '../view/not_found_page'
 
 /**
  * Shows the collected signals and the fingerprint of the given visit
@@ -9,7 +10,7 @@ import renderLayout from '../view/layout'
 export default async function resultPage(storage: Storage, visitId: string): Promise<HttpResponse> {
   const visit = await storage.finalizeAndGetVisit(visitId, true)
   if (!visit) {
-    return notFoundPage()
+    return renderNotFoundPage()
   }
 
   const fingerprintAge = Date.now() - visit.finalizedAt.getTime()
@@ -129,14 +130,4 @@ function getDurationText(durationMs: number): string {
   }
   const secondsCount = Math.floor(durationMs / 1000)
   return secondsCount === 1 ? 'a second' : `${secondsCount} seconds`
-}
-
-function notFoundPage(): HttpResponse {
-  return {
-    status: 404,
-    headers: {
-      'Content-Type': 'text/html; charset=utf-8',
-    },
-    body: 'The visit is not found. <a href="/">Back to the start</a>.',
-  }
 }

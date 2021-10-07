@@ -9,6 +9,7 @@ import receiveHeaders from './endpoints/receive_headers'
 import renderWaitResultFrame from './endpoints/wait_result_frame'
 import renderResultFrame from './endpoints/result_frame'
 import renderResultPage from './endpoints/result_page'
+import renderNotFoundPage from './view/not_found_page'
 import { catchErrorForExpress, makeExpressHeaderGetter, responseToExpress } from './utils'
 
 export default async function initApp(): Promise<express.Express> {
@@ -82,6 +83,13 @@ export default async function initApp(): Promise<express.Express> {
       redirect: false,
     }),
   )
+
+  // A custom 404 page
+  app.use((req, res) => {
+    catchErrorForExpress(req, res, () => {
+      responseToExpress(res, renderNotFoundPage())
+    })
+  })
 
   return app
 }
