@@ -21,7 +21,7 @@ export default function waitResultFrame(
 
   const lowerHeadHtml = `
 <style>
-  @keyframes keepHidden {
+  @keyframes keep-hidden {
     from {
       visibility: hidden;
       position: absolute;
@@ -30,44 +30,42 @@ export default function waitResultFrame(
     }
     to {}
   }
-  @keyframes keepVisible {
+  @keyframes keep-visible {
     from {
       visibility: visible;
       position: static;
+      top: auto;
+      left: auto;
     }
-    to {
-      visibility: visible;
-    }
+    to {}
   }
   .__delay {
     animation-duration: ${resultPromptDelay.toFixed(2)}s;
     animation-timing-function: step-end;
   }
   .__loading {
-    animation-name: keepVisible;
+    animation-name: keep-visible;
     visibility: hidden;
     position: absolute;
     top: 0;
     left: -9999px;
   }
   .__ready {
-    animation-name: keepHidden;
+    animation-name: keep-hidden;
   }
 </style>`
 
   const bodyHtml = `
 <div class="__loading __delay">
-  Your fingerprint:
+  <div>Your fingerprint:</div>
+  <h3 class="fp-block__loading">Gathering data...</h3>
 </div>
-<h3 class="fp-block__loading __loading __delay">
-  Gathering data...
-</h3>
 
 <div class="__ready __delay">
-  Your fingerprint is ready
-</div>
-<div class="__ready __delay">
-  <a href="${escapeHtml(resultFrameUrl)}" class="fp-block__button">Show</a>
+  <div>Your fingerprint is ready</div>
+  <div>
+    <a href="${escapeHtml(resultFrameUrl)}" class="fp-block__button">Show</a>
+  </div>
 </div>`
 
   const response = renderFrameLayout({
@@ -110,7 +108,7 @@ const meanSignalRequestCount = signalSources.reduce(
 function getResultDelay(downlink: string | undefined): number {
   let downlinkNumber = Number(downlink)
   if (isNaN(downlinkNumber)) {
-    downlinkNumber = 1.5
+    downlinkNumber = 1
   }
-  return 1 + meanSignalRequestCount / 12 / downlinkNumber
+  return meanSignalRequestCount / 6.46 / downlinkNumber
 }

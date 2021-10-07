@@ -22,7 +22,7 @@ export default function renderPage({
 <html lang="en">
   <head>
     ${upperHeadHtml}
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="viewport" content="width=device-width" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>${htmlTitle && `${escapeHtml(htmlTitle)} | `}No-JavaScript fingerprinting</title>
     <link rel="icon" href="/favicon.ico" />
