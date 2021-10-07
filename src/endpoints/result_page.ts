@@ -23,9 +23,9 @@ ${
 <div class="outdated-warning">
   <img src="/images/warning.svg" alt="Warning" loading="lazy" class="outdated-warning__icon" />
   <p>
-    The fingerprint was obtained more than ${getDurationText(fingerprintAge).replace(/ /g, '&nbsp;')} ago.
-    Probably, it&nbsp;doesn't belong to&nbsp;your browser.
-    <a href="/">Start&nbsp;over</a> to&nbsp;get your fingerprint.
+    The fingerprint was generated more than ${getDurationText(fingerprintAge).replace(/ /g, '&nbsp;')} ago.
+    It probably doesn't belong to your&nbsp;browser.
+    <a href="/">Start&nbsp;over</a> to&nbsp;get your&nbsp;fingerprint.
   </p>
 </div>`
     : ''
@@ -108,7 +108,10 @@ function renderSignal(source: Readonly<SignalSource>, signals: Readonly<SignalCo
   }
 
   return `<li ${isDiscarded ? 'class="signals__excluded"' : ''}>
-  <h5 class="signals__title">${escapeHtml(source.title)}</h5>
+  <h5 class="signals__title">
+    <span>${escapeHtml(source.title)}</span>&nbsp;
+    ${isDiscarded ? `<span class="signals__exclude-label">Excluded</span>` : ''}
+  </h5>
   ${details
     .map(
       ([label, value, isEmpty]) => `

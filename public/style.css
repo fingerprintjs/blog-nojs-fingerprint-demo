@@ -199,8 +199,9 @@ h5 {
 .signals__list > li:not(:first-child) {
   margin-top: 40px;
 }
-.signals__excluded {
-  text-decoration: line-through;
+.signals__excluded .signals__title > :not(.signals__exclude-label),
+.signals__excluded .signals__detail {
+  opacity: 0.3;
 }
 .signals__title {
   margin: 0 0 16px;
@@ -220,6 +221,18 @@ h5 {
 }
 .signals__detail-value:not(.signals__detail-value_empty) {
   color: #fff;
+}
+.signals__exclude-label {
+  display: inline-block;
+  vertical-align: middle;
+  margin: -5px 0;
+  padding: 4px 8px 5px;
+  font-size: 11px;
+  line-height: 1.455;
+  font-weight: normal;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 32px;
 }
 
 .outdated-warning {
