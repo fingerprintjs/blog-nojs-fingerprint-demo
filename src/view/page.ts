@@ -26,7 +26,7 @@ export default function renderPage({
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>${htmlTitle && `${escapeHtml(htmlTitle)} | `}No-JavaScript fingerprinting</title>
     <link rel="icon" href="/images/favicon.ico" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap" />
     <link rel="stylesheet" href="/style.css" />
     ${lowerHeadHtml}
   </head>

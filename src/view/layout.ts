@@ -15,7 +15,7 @@ export default function renderLayout({ bodyHtml = '', wideSubBodyHtml, ...option
   <main class="main-layout__body">${bodyHtml}</main>
   ${wideSubBodyHtml ? `<section class="main-layout__wide-sub-body">${wideSubBodyHtml}</section>` : ''}
   <footer class="main-layout__footer">
-    <a href="https://fingerprintjs.com/blog" target="_blank">Read the article ↗</a>
+    <a href="https://fingerprintjs.com/blog" target="_blank">Read an article ↗</a>
     <a href="https://github.com/fingerprintjs/blog-nojs-fingerprint-demo/" target="_blank">Source code ↗</a>
     <a href="https://fingerprintjs.com" target="_blank">FingerprintJS ↗</a>
   </footer>

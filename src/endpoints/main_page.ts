@@ -49,16 +49,16 @@ ${codeForCssSignalSources.html.join('\n')}
 </div>
 ${renderHeroTitle('No-JS fingerprinting')}
 <p>
-  Fingerprinting is a way of identifying browsers without the use of cookies or data storage.
+  Fingerprinting is a&nbsp;way of identifying browsers without the&nbsp;use of&nbsp;cookies or&nbsp;data storage.
   Created using properties like language and installed fonts,
-  your fingerprint stays the same even if your browser is in incognito mode.
+  your fingerprint stays the&nbsp;same even if&nbsp;your browser is in&nbsp;incognito mode.
 </p>
 <div>
   <iframe src="${escapeHtml(getResultFrameUrl(visitId))}" class="fp-frame" allowtransparency></iframe>
 </div>
 <p>
-  This demo further illustrates that fingerprinting is possible — even without JavaScript and cookies.
-  To verify this, disable JavaScript and cookies, then refresh your browser.
+  This demo further illustrates that fingerprinting is&nbsp;possible — even without JavaScript and cookies.
+  To&nbsp;verify this, disable JavaScript and cookies, then refresh your browser.
   Your fingerprint should remain unchanged.
 </p>
 ${jsDisableGuide ? `<p class="js-disable__header">${escapeHtml(jsDisableGuide[0])}</p>` : ''}`

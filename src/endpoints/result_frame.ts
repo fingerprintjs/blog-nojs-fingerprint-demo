@@ -16,7 +16,7 @@ export default async function resultFrame(
   }
 
   return renderFrameLayout({
-    htmlTitle: 'Your fingerprint',
+    htmlTitle: 'My fingerprint',
     bodyHtml: `
 <div>Your fingerprint:</div>
 <div class="fp-block__fingerprint">${escapeHtml(visit.fingerprint)}</div>
