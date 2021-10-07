@@ -16,8 +16,10 @@ export default function waitResultFrame(
   getHeader: (name: string) => string | undefined,
   resultFrameUrl: string,
 ): HttpResponse {
-  const resultPromptDelay = getResultDelay(getHeader('Downlink'))
-  const resultRedirectDelay = resultPromptDelay * 3
+  const minDelayTime = getResultDelay(getHeader('Downlink'))
+  const resultRedirectDelay = minDelayTime * 3
+  // Don't let the prompt (button) state be shown during a too short time
+  const resultPromptDelay = minDelayTime < 1 ? 1000 : minDelayTime
 
   const lowerHeadHtml = `
 <style>
