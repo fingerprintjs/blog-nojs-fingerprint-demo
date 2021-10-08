@@ -49,7 +49,6 @@ export interface HttpHeaderSignalSource {
   type: 'httpHeader'
   resourceType: 'page' | 'image' | 'video' | 'audio' | 'style'
   headerName: string
-  isClientHint?: boolean
   getSignificantPart?(headerValue: string): string
 }
 

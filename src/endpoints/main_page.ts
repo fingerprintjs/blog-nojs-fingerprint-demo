@@ -93,7 +93,7 @@ ${jsDisableGuide ? `<p class="js-disable__header">${escapeHtml(jsDisableGuide[0]
     ...response,
     headers: {
       ...response.headers,
-      'Accept-CH': [...resultDelayChHeaders, ...getClientHintHeaders()].join(', '),
+      'Accept-CH': resultDelayChHeaders.join(', '),
     },
   }
 }
@@ -165,14 +165,4 @@ function makeCodeForCssSignalSources(visitId: string, getSignalActivationUrl: Si
   }
 
   return { css, html }
-}
-
-function getClientHintHeaders() {
-  const names: string[] = []
-  for (const signalSource of signalSources) {
-    if (signalSource.type === 'httpHeader' && signalSource.isClientHint) {
-      names.push(signalSource.headerName)
-    }
-  }
-  return names
 }
