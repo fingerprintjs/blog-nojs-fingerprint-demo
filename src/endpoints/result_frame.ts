@@ -1,5 +1,6 @@
 import { Storage } from '../common_types'
 import { escapeHtml, HttpResponse } from '../utils'
+import renderFrameLayout from '../view/frame_layout'
 
 /**
  * A page to show the fingerprint of the given visit inside a frame
@@ -14,22 +15,13 @@ export default async function resultFrame(
     return notFoundPage()
   }
 
-  const body = `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  </head>
-  <body>
-    <div>Your fingerprint: <strong>${escapeHtml(visit.fingerprint)}</strong></div>
-    <div><a href="${escapeHtml(fullResultUrl)}" target="_top">See more details</a></div>
-  </body>
-</html>`
-
-  return {
-    headers: { 'Content-Type': 'text/html; charset=utf-8' },
-    body,
-  }
+  return renderFrameLayout({
+    htmlTitle: 'Your fingerprint',
+    bodyHtml: `
+<div>Your fingerprint:</div>
+<div class="fp-block__fingerprint">${escapeHtml(visit.fingerprint)}</div>
+<div><a href="${escapeHtml(fullResultUrl)}" target="_top">See more details →</a></div>`,
+  })
 }
 
 function notFoundPage(): HttpResponse {

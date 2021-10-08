@@ -1,3 +1,4 @@
+import path from 'path'
 import express from 'express'
 import * as pg from 'pg'
 import { Storage } from './common_types'
@@ -8,25 +9,41 @@ import receiveHeaders from './endpoints/receive_headers'
 import renderWaitResultFrame from './endpoints/wait_result_frame'
 import renderResultFrame from './endpoints/result_frame'
 import renderResultPage from './endpoints/result_page'
-import { catchErrorForExpress, makeExpressHeaderGetter, responseToExpress } from './utils'
+import renderNotFoundPage from './view/not_found_page'
+import { catchErrorForExpress, getUrlFromExpressRequest, makeExpressHeaderGetter, responseToExpress } from './utils'
 
 export default async function initApp(): Promise<express.Express> {
   const storage = createStorage()
   const app = express()
 
+  // Redirects from the www domain to the regular domain
+  if (process.env.REDIRECT_FROM_WWW?.toLocaleLowerCase() === 'true') {
+    app.use((req, res, next) => {
+      catchErrorForExpress(req, res, () => {
+        if (req.hostname.startsWith('www.')) {
+          res.redirect(301, getUrlFromExpressRequest(req, true).replace('://www.', '://'))
+        } else {
+          next()
+        }
+      })
+    })
+  }
+
   app.get('/', (req, res) => {
     catchErrorForExpress(req, res, async () => {
       responseToExpress(
         res,
-        await renderMainPage(
+        await renderMainPage({
           storage,
-          req.ip,
-          req.header('User-Agent') || '',
-          (visitId, signalKey, value) =>
+          requestUrl: getUrlFromExpressRequest(req),
+          ip: req.ip,
+          userAgent: req.header('User-Agent') || '',
+          getSignalActivationUrl: (visitId, signalKey, value) =>
             `/signal/${encodeURIComponent(visitId)}/${encodeURIComponent(signalKey)}/${encodeURIComponent(value)}`,
-          (visitId, resourceType) => `/headers/${encodeURIComponent(visitId)}/${encodeURIComponent(resourceType)}`,
-          (visitId) => `/waitResult/${encodeURIComponent(visitId)}`,
-        ),
+          getHeaderProbeUrl: (visitId, resourceType) =>
+            `/headers/${encodeURIComponent(visitId)}/${encodeURIComponent(resourceType)}`,
+          getResultFrameUrl: (visitId) => `/waitResult/${encodeURIComponent(visitId)}`,
+        }),
       )
     })
   })
@@ -69,8 +86,23 @@ export default async function initApp(): Promise<express.Express> {
 
   app.get('/result/:visitId', (req, res) => {
     catchErrorForExpress(req, res, async () => {
-      const response = await renderResultPage(storage, req.params.visitId)
+      const response = await renderResultPage(storage, req.params.visitId, getUrlFromExpressRequest(req))
       responseToExpress(res, response)
+    })
+  })
+
+  // This middleware is the last to make express scan the directory only if none of the app routes match
+  app.use(
+    express.static(path.join(__dirname, '..', 'public'), {
+      index: false,
+      redirect: false,
+    }),
+  )
+
+  // A custom 404 page
+  app.use((req, res) => {
+    catchErrorForExpress(req, res, () => {
+      responseToExpress(res, renderNotFoundPage())
     })
   })
 

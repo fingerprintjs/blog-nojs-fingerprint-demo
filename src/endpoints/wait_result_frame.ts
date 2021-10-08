@@ -1,5 +1,6 @@
 import { escapeHtml, HttpResponse } from '../utils'
 import signalSources from '../signal_sources'
+import renderFrameLayout from '../view/frame_layout'
 
 /**
  * The client hints that should be requested before running this endpoint
@@ -15,66 +16,73 @@ export default function waitResultFrame(
   getHeader: (name: string) => string | undefined,
   resultFrameUrl: string,
 ): HttpResponse {
-  const resultPromptDelay = getResultDelay(getHeader('Downlink'))
-  const resultRedirectDelay = resultPromptDelay * 3
+  const minDelayTime = getResultDelay(getHeader('Downlink'))
+  const resultRedirectDelay = minDelayTime * 3
+  // Don't let the prompt (button) state be shown during a too short time
+  const resultPromptDelay = minDelayTime < 1 ? 1000 : minDelayTime
 
-  const body = `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <style>
-      @keyframes keepHidden {
-        from {
-          visibility: hidden;
-          position: absolute;
-          top: 0;
-          left: -9999px;
-        }
-        to {}
-      }
-      @keyframes keepVisible {
-        from {
-          visibility: visible;
-          position: static;
-        }
-        to {
-          visibility: visible;
-        }
-      }
-      .resultDelay {
-        animation-duration: ${resultPromptDelay.toFixed(2)}s;
-        animation-timing-function: step-end;
-      }
-      .resultPlaceholder {
-        animation-name: keepVisible;
-        visibility: hidden;
-        position: absolute;
-        top: 0;
-        left: -9999px;
-      }
-      .resultBlock {
-        animation-name: keepHidden;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="resultPlaceholder resultDelay">
-      Collecting data, please wait...
-    </div>
-    <div class="resultBlock resultDelay">
-      <a href="${escapeHtml(resultFrameUrl)}">See your fingerprint</a>
-    </div>
-  </body>
-</html>`
+  const lowerHeadHtml = `
+<style>
+  @keyframes keep-hidden {
+    from {
+      visibility: hidden;
+      position: absolute;
+      top: 0;
+      left: -9999px;
+    }
+    to {}
+  }
+  @keyframes keep-visible {
+    from {
+      visibility: visible;
+      position: static;
+      top: auto;
+      left: auto;
+    }
+    to {}
+  }
+  .__delay {
+    animation-duration: ${resultPromptDelay.toFixed(2)}s;
+    animation-timing-function: step-end;
+  }
+  .__loading {
+    animation-name: keep-visible;
+    visibility: hidden;
+    position: absolute;
+    top: 0;
+    left: -9999px;
+  }
+  .__ready {
+    animation-name: keep-hidden;
+  }
+</style>`
+
+  const bodyHtml = `
+<div class="__loading __delay">
+  <div>Your fingerprint:</div>
+  <h3 class="fp-block__loading">Gathering data...</h3>
+</div>
+
+<div class="__ready __delay">
+  <div>Your fingerprint is ready</div>
+  <div>
+    <a href="${escapeHtml(resultFrameUrl)}" class="fp-block__button">Show</a>
+  </div>
+</div>`
+
+  const response = renderFrameLayout({
+    htmlTitle: 'Making the fingerprint',
+    lowerHeadHtml,
+    bodyHtml,
+  })
 
   return {
+    ...response,
     headers: {
-      'Content-Type': 'text/html; charset=utf-8',
+      ...response.headers,
       'Cache-Control': 'no-cache, must-revalidate',
       Refresh: `${Math.ceil(resultRedirectDelay)};url=${resultFrameUrl}`,
     },
-    body,
   }
 }
 
@@ -102,7 +110,7 @@ const meanSignalRequestCount = signalSources.reduce(
 function getResultDelay(downlink: string | undefined): number {
   let downlinkNumber = Number(downlink)
   if (isNaN(downlinkNumber)) {
-    downlinkNumber = 1.5
+    downlinkNumber = 1
   }
-  return 1 + meanSignalRequestCount / 12 / downlinkNumber
+  return meanSignalRequestCount / 6.46 / downlinkNumber
 }

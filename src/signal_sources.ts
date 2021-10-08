@@ -177,7 +177,7 @@ const signalSources: readonly Readonly<SignalSource>[] = [
   ].map((fontName) => ({
     type: 'fontAbsence' as const,
     key: `${toCamelCase(fontName)}FontAbsence`,
-    title: `"${fontName}" font`,
+    title: `“${fontName}” font`,
     fontName,
   })),
 

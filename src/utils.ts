@@ -95,3 +95,7 @@ export async function catchErrorForExpress(
     }
   }
 }
+
+export function getUrlFromExpressRequest(request: express.Request, withQuery?: boolean): string {
+  return `${request.protocol}://${request.hostname}${withQuery ? request.originalUrl : request.path}`
+}

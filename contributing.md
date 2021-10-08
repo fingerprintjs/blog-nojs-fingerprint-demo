@@ -78,7 +78,7 @@ Create a database:
     - DB instance class: the smallest database class should suffice (look within the burstable classes).
     - Storage: `General Purpose`, the minimal allocated storage should suffice
     - Multi-AZ deployment: `Do not create a standby instance` should suffice
-    - Public access: `Yes`
+    - Public access: `Yes`. If you set `No`, the database won't be accessible from the lambda function.
     - Database authentication options: `Password authentication`
 - Click "Create database"
 
@@ -89,8 +89,6 @@ Write down the endpoint and the port.
 Connect to the DB server using any Postgres client. Then:
 - Create a database with any name, e.g. `nojs-fingerprint`, write the name down
 - Run all the files from the repository's `migrations` directory in the database
-
-If this is a production database, turn off the public access in the AWS console.
 
 ### Creating a function
 
@@ -113,6 +111,8 @@ Create a lambda function:
     - Timeout: `10` seconds
 - On the function page click "Configuration", "Environment variables" and add variables:
     - `NODE_OPTIONS` `--enable-source-maps`
+    - `NODE_ENV` `production`
+    - `REDIRECT_FROM_WWW` `true`
     - `DB_HOST` the endpoint of the database server that you've created earlier
     - `DB_PORT` the port of the database server
     - `DB_USERNAME` the username that you've created during the database creation
