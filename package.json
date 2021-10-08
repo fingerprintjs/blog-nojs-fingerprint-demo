@@ -4,7 +4,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "nodemon --watch src -e js,json,ts --exec ts-node src/index_server.ts",
+    "start": "nodemon --watch src -e js,json,ts,env --exec ts-node src/index_server.ts",
     "build": "rimraf dist && tsc",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx --ignore-path .gitignore --max-warnings 0 .",
     "lint:fix": "yarn lint --fix"

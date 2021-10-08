@@ -71,7 +71,7 @@ ${renderHeroTitle('No-JS fingerprinting')}
 <p>
   This demo further illustrates that fingerprinting is&nbsp;possible — even without JavaScript and cookies.
   To&nbsp;verify this, disable JavaScript and cookies, then refresh your browser.
-  Your fingerprint should remain unchanged.
+  Your fingerprint will remain unchanged.
 </p>
 ${jsDisableGuide ? `<p class="js-disable__header">${escapeHtml(jsDisableGuide[0])}</p>` : ''}`
 

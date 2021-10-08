@@ -16,6 +16,19 @@ export default async function initApp(): Promise<express.Express> {
   const storage = createStorage()
   const app = express()
 
+  // Redirects from the www domain to the regular domain
+  if (process.env.REDIRECT_FROM_WWW?.toLocaleLowerCase() === 'true') {
+    app.use((req, res, next) => {
+      catchErrorForExpress(req, res, () => {
+        if (req.hostname.startsWith('www.')) {
+          res.redirect(301, getUrlFromExpressRequest(req, true).replace('://www.', '://'))
+        } else {
+          next()
+        }
+      })
+    })
+  }
+
   app.get('/', (req, res) => {
     catchErrorForExpress(req, res, async () => {
       responseToExpress(
