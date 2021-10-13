@@ -22,7 +22,7 @@ Open this directory in a terminal and run:
 
 ```bash
 yarn install
-yarn start
+yarn dev
 ```
 
 Then open the application in a browser: http://localhost:8080

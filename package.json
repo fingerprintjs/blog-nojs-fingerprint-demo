@@ -4,8 +4,9 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "nodemon --watch src -e js,json,ts,env --exec ts-node src/index_server.ts",
     "build": "rimraf dist && tsc",
+    "start": "node dist/index.js",
+    "dev": "nodemon --watch src -e js,json,ts,env --exec ts-node src/index.ts",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx --ignore-path .gitignore --max-warnings 0 .",
     "lint:fix": "yarn lint --fix"
   },
@@ -13,7 +14,6 @@
     "node": ">=14"
   },
   "dependencies": {
-    "@vendia/serverless-express": "^4.3.11",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "murmurhash3js": "^3.0.1",

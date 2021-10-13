@@ -99,7 +99,7 @@ export default class PostgresStorage implements Storage {
         await client.query('BEGIN')
 
         const visitResponse = await client.query<Pick<VisitRow, 'id' | 'fingerprint' | 'finalized_at'>>(
-          // We don't the visit to be finalized during the finalization, so we lock the row
+          // We don't want the visit to be finalized during the finalization, so we lock the row
           'SELECT id, fingerprint, finalized_at FROM visits WHERE public_id = $1 FOR UPDATE',
           [visitId.slice(0, visitIdMaxLength)],
         )

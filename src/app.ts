@@ -16,6 +16,25 @@ export default async function initApp(): Promise<express.Express> {
   const storage = createStorage()
   const app = express()
 
+  app.set('trust proxy', process.env.SERVER_TRUST_PROXY || false)
+
+  // Redirects from HTTP to HTTPS
+  if (process.env.REDIRECT_FROM_HTTP?.toLocaleLowerCase() === 'true') {
+    app.use((req, res, next) => {
+      catchErrorForExpress(req, res, () => {
+        if (
+          req.protocol === 'http' &&
+          // The Elastic Beanstalk health checker expects the response code to be 200
+          !req.hostname.endsWith('.elasticbeanstalk.com')
+        ) {
+          res.redirect(301, getUrlFromExpressRequest(req, true).replace('http://', 'https://'))
+        } else {
+          next()
+        }
+      })
+    })
+  }
+
   // Redirects from the www domain to the regular domain
   if (process.env.REDIRECT_FROM_WWW?.toLocaleLowerCase() === 'true') {
     app.use((req, res, next) => {

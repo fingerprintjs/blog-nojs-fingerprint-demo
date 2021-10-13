@@ -27,15 +27,17 @@ jobs:
         run: yarn build
       - name: Leave only production Node packages
         run: cp -a node_modules node_modules_backup && yarn install --production
-      - name: Make an archive for AWS Lambda and save it as an artifact
+      - name: Make an archive for AWS Elastic Beanstalk and save it as an artifact
         uses: actions/upload-artifact@v2
         with:
-          name: lambda
+          name: Upload me to EB environment
+          # node_modules is included because EB uses NPM to install packages and therefore ignores yarn.lock
           path: |
             dist/
             node_modules/
             public/
+            package.json
       - name: Restore Node packages for proper caching
         run: rm -r node_modules && mv node_modules_backup node_modules
       - name: How to deploy
-        run: echo 'In order to deploy the lambda, download the "lambda" artifact of this run and upload it into the function in the AWS Lambda UI (Upload from — .zip file)'
+        run: echo 'In order to deploy the application, download the artifact of this run and upload it into the environment in the AWS Elastic Beanstalk (Upload and deploy — Choose file)'

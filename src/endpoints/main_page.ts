@@ -44,7 +44,7 @@ export default async function renderMainPage({
   getHeaderProbeUrl,
   getResultFrameUrl,
 }: Options): Promise<HttpResponse> {
-  const visitId = await storage.createVisit(ip, userAgent)
+  const visitId = shouldIgnoreVisit(userAgent) ? '-' : await storage.createVisit(ip, userAgent)
   const codeForCssSignalSources = makeCodeForCssSignalSources(visitId, getSignalActivationUrl)
   const jsDisableGuide = renderJsDisableGuide(userAgent)
 
@@ -96,6 +96,10 @@ ${jsDisableGuide ? `<p class="js-disable__header">${escapeHtml(jsDisableGuide[0]
       'Accept-CH': resultDelayChHeaders.join(', '),
     },
   }
+}
+
+function shouldIgnoreVisit(userAgent: string) {
+  return /^ELB-HealthChecker\//i.test(userAgent)
 }
 
 function makeCodeForCssSignalSources(visitId: string, getSignalActivationUrl: SignalActivationUrlFactory) {
