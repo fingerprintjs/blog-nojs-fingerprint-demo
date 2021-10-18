@@ -47,7 +47,7 @@ export interface CssMediaNumberSignalSource {
  */
 export interface HttpHeaderSignalSource {
   type: 'httpHeader'
-  resourceType: 'page' | 'image' | 'video' | 'audio' | 'style'
+  resourceType: 'page' | 'image' | 'style'
   headerName: string
   getSignificantPart?(headerValue: string): string
 }

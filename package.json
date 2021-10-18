@@ -6,7 +6,7 @@
   "scripts": {
     "build": "rimraf dist && tsc",
     "start": "node dist/index.js",
-    "dev": "nodemon --watch src -e js,json,ts,env --exec ts-node src/index.ts",
+    "dev": "nodemon --watch src -e js,json,ts --exec ts-node src/index.ts",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx --ignore-path .gitignore --max-warnings 0 .",
     "lint:fix": "yarn lint --fix"
   },

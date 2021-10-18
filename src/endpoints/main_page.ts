@@ -55,8 +55,6 @@ export default async function renderMainPage({
   const bodyHtml = `
 <div style="position: absolute; top: 0; left: -9999px;">
   <img src="${escapeHtml(getHeaderProbeUrl(visitId, 'image'))}" alt="" />
-  <video src="${escapeHtml(getHeaderProbeUrl(visitId, 'video'))}"></video>
-  <audio src="${escapeHtml(getHeaderProbeUrl(visitId, 'audio'))}"></audio>
 ${codeForCssSignalSources.html.join('\n')}
 </div>
 ${renderHeroTitle('No-JS fingerprinting')}

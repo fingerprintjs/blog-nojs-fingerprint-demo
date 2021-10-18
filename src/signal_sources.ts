@@ -213,20 +213,6 @@ const signalSources: readonly Readonly<SignalSource>[] = [
   },
   {
     type: 'httpHeader',
-    key: 'videoAcceptHeader',
-    title: 'Accept header for video',
-    resourceType: 'video',
-    headerName: 'Accept',
-  },
-  {
-    type: 'httpHeader',
-    key: 'audioAcceptHeader',
-    title: 'Accept header for audio',
-    resourceType: 'audio',
-    headerName: 'Accept',
-  },
-  {
-    type: 'httpHeader',
     key: 'styleAcceptHeader',
     title: 'Accept header for stylesheet',
     resourceType: 'style',
