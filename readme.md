@@ -1,4 +1,4 @@
-# No-JavaScript fingerprinting demo
+# [No-JavaScript fingerprinting demo](https://noscriptfingerprint.com/)
 
 A fingerprint that works without JavaScript and cookies.
 
