@@ -9,6 +9,8 @@ The fingerprint stays unaltered in the following conditions:
 - Going into incognito mode
 - Changing the IP
 
+[Read an article](https://fingerprintjs.com/blog/disabling-javascript-wont-stop-fingerprinting/)
+
 ## Quick start
 
 You need to install [Node.js](https://nodejs.org), [Yarn](https://yarnpkg.com)
