@@ -9,7 +9,7 @@ The fingerprint stays unaltered in the following conditions:
 - Going into incognito mode
 - Changing the IP
 
-[Read an article](https://fingerprintjs.com/blog/disabling-javascript-wont-stop-fingerprinting/)
+[Read an article](https://fingerprint.com/blog/disabling-javascript-wont-stop-fingerprinting/)
 
 ## Quick start
 
